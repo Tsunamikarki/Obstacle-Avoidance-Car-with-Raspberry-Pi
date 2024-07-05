@@ -13,7 +13,7 @@ ltRev=16 #in4
 trig=29
 echo=31
 safeDis=20 
-disAtScan = [3]
+disAtScan = [0, 0, 0]
 angles = [0,90,180]
 #servo
 servoPin=32
@@ -72,11 +72,9 @@ def rotateServo():
 	for i in range(3):
 		setServoAngle(angles[i])
 		servoDistance=getDistance()
-		disAtScan.append(servoDistance)
-		rightDis=disAtScan.index("1")
-		print(f"Right Dis =  {rightDis}")
-        leftDis=disAtScan[2]
-		
+        disAtScan[i]=servoDistance
+        print(f"Distance at angle {angles[i]}: {servoDistance} cm")
+
 #start PWM
 speedEnRt.start(50)
 speedEnLt.start(50)
@@ -124,7 +122,14 @@ while True:
 	if(frontDis < 20):
 		print("Obstacle Detected")
 		stop()
-	rotateServo()
-		
-	
+	    rotateServo()
+        if disAtScan[0] > safeDis:
+            left()
+            time.sleep(1)
+        else:
+            right()
+            time.sleep(1)
+    else:
+        forward()
+
 GPIO.cleanup()
