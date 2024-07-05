@@ -15,6 +15,7 @@ echo=31
 safeDis=20 
 disAtScan = [0, 0, 0]
 angles = [0,90,180]
+
 #servo
 servoPin=32
 duty=90
