@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO 
 import time
 
+
 #motors 
 enRt=33 #enA 
 enLt=35 #enB
@@ -39,15 +40,12 @@ GPIO.setup(servoPin, GPIO.OUT)
 servo=GPIO.PWM(servoPin, 50) #50 is 50Hz pulse
 servo.start(0)
 
-
-
 def getDistance():
 	GPIO.output(trig, False)
 	time.sleep(0.000002)
 	GPIO.output(trig, True)
 	time.sleep(0.00001)
 	GPIO.output(trig, False)
-	
 	while GPIO.input(echo)==0:
 		echoStartTime=time.time()
 	
@@ -55,25 +53,23 @@ def getDistance():
 		echoStopTime=time.time()
 	timeElapsed=echoStopTime-echoStartTime
 	distance=timeElapsed * 17150
-	
-	print(round(distance,2), 'cm')
-	#time.sleep(0.2)
 	return distance
 	
 def setServoAngle(angle):
-	duty=angle / 18 + 2
-	GPIO.output(servoPin, True)
-	servo.ChangeDutyCycle(duty)
-	time.sleep(1)
-	GPIO.output(servoPin, False)
-	servo.ChangeDutyCycle(0)
+    duty=angle / 18 + 2
+    GPIO.output(servoPin, True)
+    servo.ChangeDutyCycle(duty)
+    time.sleep(1)
+    GPIO.output(servoPin, False)
+    servo.ChangeDutyCycle(0)
 
 def rotateServo():
-	for i in range(3):
-		setServoAngle(angles[i])
-		servoDistance=getDistance()
+    for i in range(3):
+        setServoAngle(angles[i])
+        servoDistance=getDistance()
         disAtScan[i]=servoDistance
-        print(f"Distance at angle {angles[i]}: {servoDistance} cm")
+        print(f"Distance at angle {angles[i]}:")
+        print(round(servoDistance, 2), 'cm')
 
 #start PWM
 speedEnRt.start(50)
@@ -85,7 +81,6 @@ def forward():
 	GPIO.output(rtRev, GPIO.LOW)
 	GPIO.output(ltFwd, GPIO.HIGH)
 	GPIO.output(ltRev, GPIO.LOW)
-	print("Moving forward!")
 
 #Backward Motion
 def reverse():
@@ -93,7 +88,6 @@ def reverse():
 	GPIO.output(rtRev, GPIO.HIGH)
 	GPIO.output(ltFwd, GPIO.LOW)
 	GPIO.output(ltRev, GPIO.HIGH)
-	print("Moving backward!")
 
 #Right Turn
 def right():
@@ -118,18 +112,24 @@ def stop():
 
 while True:
 	setServoAngle(90)
-	frontDis=getDistance()
-	if(frontDis < 20):
+	frontDis=disAtScan[1]
+	rightDis=disAtScan[0]
+	leftDis=disAtScan[2]
+	if(frontDis > 20):
+		forward()
+		print("No obstacle. Moving forward!")
+	else:
 		print("Obstacle Detected")
 		stop()
-	    rotateServo()
-        if disAtScan[0] > safeDis:
-            left()
-            time.sleep(1)
-        else:
-            right()
-            time.sleep(1)
-    else:
-        forward()
+		rotateServo()
+		setServoAngle(90)
+		if (rightDis > safeDis and rightDis > leftDis):
+			right()
+			print("Turning right")
+			time.sleep(1)
+		elif(leftDis > safeDis and leftDis > rightDis):
+			left()
+			print("Turning left")     
+			time.sleep(1)
 
-GPIO.cleanup()
+	GPIO.cleanup()
