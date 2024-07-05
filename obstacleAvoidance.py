@@ -67,9 +67,8 @@ def rotateServo():
         setServoAngle(angles[i])
         servoDistance=getDistance()
         disAtScan[i]=servoDistance
-        print(f"Distance at angle {angles[i]}:")
-        print(round(servoDistance, 2), 'cm')
-
+        print(f"Distance at angle {angles[i]}: {round(servoDistance, 2)} cm ")
+        
 #start PWM
 speedEnRt.start(50)
 speedEnLt.start(50)
@@ -109,26 +108,27 @@ def stop():
 	GPIO.output(ltFwd, GPIO.LOW)
 	GPIO.output(ltRev, GPIO.LOW)
 
-while True:
-	setServoAngle(90)
-	frontDis=disAtScan[1]
-	rightDis=disAtScan[0]
-	leftDis=disAtScan[2]
-	if(frontDis > 20):
-		forward()
-		print("No obstacle. Moving forward!")                                                                                                                                                                           
-	else:
-		print("Obstacle Detected")
-		stop()
-		rotateServo()
-		setServoAngle(90)
-		if (rightDis > safeDis and rightDis > leftDis):
-			right()
-			print("Turning right")
-			time.sleep(1)
-		elif(leftDis > safeDis and leftDis > rightDis):
-			left()
-			print("Turning left")     
-			time.sleep(1)
-
-	GPIO.cleanup()
+while True:              
+    stop()
+    rotateServo()                            
+    frontDis=disAtScan[1]
+    rightDis=disAtScan[0]
+    leftDis=disAtScan[2]
+    if(frontDis < 20):
+        print("Obstacle Detected")
+		#stop()
+		#rotateServo()
+		#setServoAngle(90) 
+        if (rightDis > safeDis and rightDis > leftDis):
+            right()
+            print("Turning right")
+            time.sleep(1)
+        elif(leftDis > safeDis and leftDis > rightDis):
+            left()
+            print("Turning left")     
+            time.sleep(1)
+    else:
+        forward()
+        print("No obstacle. Moving forward!")     
+        
+GPIO.cleanup()
