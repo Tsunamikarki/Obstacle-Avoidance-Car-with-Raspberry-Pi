@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO 
 import time
 
-
 #motors 
 enRt=33 #enA 
 enLt=35 #enB
@@ -117,7 +116,7 @@ while True:
 	leftDis=disAtScan[2]
 	if(frontDis > 20):
 		forward()
-		print("No obstacle. Moving forward!")
+		print("No obstacle. Moving forward!")                                                                                                                                                                           
 	else:
 		print("Obstacle Detected")
 		stop()
