@@ -112,13 +112,14 @@ def stop():
 	GPIO.output(ltFwd, GPIO.LOW)
 	GPIO.output(ltRev, GPIO.LOW)
 
-while True:                      
+while True:   
+    rotateServo()                   
     frontDis=disAtScan[1]
     rightDis=disAtScan[0]
     leftDis=disAtScan[2]
+    setServoAngle(90)
     if(frontDis < 20):
         print("Obstacle Detected")
-        rotateServo()
         setServoAngle(90)
         time.sleep(0.2)
         if (rightDis > safeDis and rightDis > leftDis):
